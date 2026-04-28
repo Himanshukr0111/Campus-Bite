@@ -1,112 +1,1263 @@
 <!DOCTYPE html>
-<html>
-<head>
+<!-- saved from url=(0061)file:///C:/Users/hp/Downloads/CampusBite-BU_final_%20(5).html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <title>CampusBite-BU</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="file:///C:/Users/hp/Downloads/CampusBite-BU(final)_files/css2" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0047ab;
+      --secondary: #00bfff;
+      --glass: rgba(255,255,255,0.07);
+      --gb: rgba(255,255,255,0.16);
+      --text: #f0f4ff;
+      --muted: #7a94b8;
+      --success: #00e676;
+      --warn: #ffab40;
+      --danger: #ff5252;
+      --input-bg: rgba(255,255,255,0.07);
+      --input-border: rgba(255,255,255,0.15);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+      min-height: 100vh;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+    canvas#bg { position: fixed; top: 0; left: 0; z-index: 0; pointer-events: none; }
 
-<title>CampusBite</title>
+    /* ─── AUTH PAGE ─── */
+    #authPage {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      position: relative;
+      z-index: 5;
+    }
+    .navbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 32px;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--gb);
+    }
+    .branding { display: flex; align-items: center; gap: 12px; }
+    .logo-circle {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 800; color: #fff;
+      box-shadow: 0 0 20px rgba(0,143,255,.35);
+    }
+    .brand-text { line-height: 1.3; }
+    .brand-name { font-size: 15px; font-weight: 700; color: #cce0ff; }
+    .brand-sub { font-size: 10px; color: var(--muted); }
+    .nav-badge {
+      font-size: 12px; color: var(--muted);
+      border: 1px solid var(--gb);
+      padding: 5px 14px; border-radius: 20px;
+      backdrop-filter: blur(8px);
+    }
+    main.auth-main {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 40px 20px;
+    }
+    .auth-card {
+      width: 100%; max-width: 480px;
+      background: rgba(13, 27, 46, 0.78);
+      border: 1px solid var(--gb);
+      border-radius: 24px;
+      backdrop-filter: blur(24px);
+      padding: 40px 44px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04) inset;
+      animation: slideUp 0.55s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(32px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .card-header { text-align: center; margin-bottom: 32px; }
+    .card-icon {
+      width: 64px; height: 64px; border-radius: 20px; margin: 0 auto 16px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 8px 32px rgba(0,71,171,0.5);
+    }
+    .card-title {
+      font-size: 26px; font-weight: 800;
+      background: linear-gradient(90deg, #fff 0%, #7dd3fc 60%, var(--secondary) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+    .card-sub { font-size: 13px; color: var(--muted); }
+    .auth-tabs {
+      display: flex; background: rgba(255,255,255,0.05); border-radius: 12px;
+      padding: 4px; margin-bottom: 28px;
+      border: 1px solid var(--gb);
+    }
+    .auth-tab {
+      flex: 1; padding: 9px 0; text-align: center;
+      font-size: 13px; font-weight: 600; color: var(--muted);
+      cursor: pointer; border-radius: 9px;
+      transition: all 0.25s;
+    }
+    .auth-tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(0,71,171,0.4);
+    }
+    .auth-form { display: none; animation: fadeIn 0.3s ease both; }
+    .auth-form.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .field { margin-bottom: 18px; }
+    .field label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: #8aaecc; margin-bottom: 7px; letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .input-wrap { position: relative; }
+    .input-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      font-size: 16px; pointer-events: none; opacity: 0.55;
+    }
+    .field input {
+      width: 100%; padding: 12px 14px 12px 42px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 12px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+    .field input::placeholder { color: rgba(160,180,210,0.4); }
+    .field input:focus {
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px rgba(0,191,255,0.12);
+      background: rgba(0,191,255,0.07);
+    }
+    .field input.error { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(255,82,82,0.12); }
+    .err-msg { display: none; font-size: 11px; color: var(--danger); margin-top: 5px; }
+    .err-msg.show { display: block; }
+    .toggle-pw {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      cursor: pointer; font-size: 16px; opacity: 0.45;
+      transition: opacity 0.2s;
+    }
+    .toggle-pw:hover { opacity: 0.8; }
+    .hint-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin: -8px 0 20px;
+    }
+    .hint-row label { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--muted); cursor: pointer; }
+    .hint-row input[type=checkbox] { accent-color: var(--secondary); width: 14px; height: 14px; }
+    .forgot { font-size: 12px; color: var(--secondary); text-decoration: none; opacity: 0.8; transition: opacity 0.2s; cursor: pointer; }
+    .forgot:hover { opacity: 1; }
+    .submit-btn {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff; border: none; border-radius: 13px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px; font-weight: 700;
+      cursor: pointer; letter-spacing: 0.03em;
+      transition: filter 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 6px 24px rgba(0,71,171,0.45);
+    }
+    .submit-btn:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 10px 32px rgba(0,71,171,0.55); }
+    .submit-btn:active { transform: translateY(0); filter: brightness(0.95); }
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 22px 0; color: var(--muted); font-size: 12px;
+    }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--gb); }
+    .sso-row { display: flex; gap: 10px; }
+    .sso-btn {
+      flex: 1; padding: 11px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--gb);
+      border-radius: 11px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px; font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .sso-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25); }
+    .switch-txt { text-align: center; font-size: 13px; color: var(--muted); margin-top: 22px; }
+    .switch-txt a { color: var(--secondary); cursor: pointer; text-decoration: none; font-weight: 600; }
+    footer {
+      text-align: center; padding: 18px; font-size: 11px; color: var(--muted);
+      border-top: 1px solid var(--gb); background: rgba(0,0,0,0.3);
+      position: relative; z-index: 5;
+    }
 
-<link rel="stylesheet" href="style.css">
+    /* ─── FOOD APP PAGE ─── */
+    #appPage { display: none; position: relative; z-index: 5; }
+    .app-navbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 28px;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--gb);
+      position: sticky; top: 0; z-index: 200;
+    }
+    .app-branding { display: flex; align-items: center; gap: 12px; }
+    .app-logo {
+      width: 42px; height: 42px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 800;
+    }
+    .app-tagline { font-size: 11px; color: var(--muted); line-height: 1.5; }
+    .app-tagline p:first-child { font-weight: 600; color: #cce0ff; font-size: 13px; }
+    .nav-links { display: flex; list-style: none; gap: 6px; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: 13px;
+      padding: 6px 12px; border-radius: 8px; transition: .2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: #fff; background: rgba(0,143,255,.2); }
+    .nav-links a.active { color: var(--secondary); font-weight: 600; }
+    .nav-user { display: flex; align-items: center; gap: 10px; }
+    .user-chip {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.07); border: 1px solid var(--gb);
+      border-radius: 20px; padding: 5px 14px 5px 8px;
+      font-size: 12px; color: #cce0ff;
+    }
+    .user-avatar {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+    }
+    .logout-btn {
+      font-size: 12px; color: var(--muted); cursor: pointer;
+      padding: 5px 12px; border-radius: 8px;
+      border: 1px solid var(--gb);
+      background: none;
+      font-family: 'Outfit', sans-serif;
+      transition: .2s;
+    }
+    .logout-btn:hover { color: var(--danger); border-color: var(--danger); background: rgba(255,82,82,0.07); }
+    .hamburger { display: none; font-size: 22px; cursor: pointer; color: #fff; }
+    .sidebar {
+      height: 100%; width: 0; position: fixed; top: 0; left: 0; z-index: 999;
+      background: rgba(5,10,25,.97); backdrop-filter: blur(20px);
+      overflow-x: hidden; transition: .3s; padding-top: 60px;
+      border-right: 1px solid var(--gb);
+    }
+    .sidebar a {
+      display: block; padding: 14px 24px; color: var(--muted);
+      text-decoration: none; font-size: 15px; transition: .2s;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    .sidebar a:hover { color: #fff; background: rgba(0,143,255,.15); padding-left: 32px; }
+    .closebtn { position: absolute; top: 14px; right: 18px; font-size: 28px !important; padding: 0 !important; border: none !important; }
+    .app-main { max-width: 1200px; margin: 0 auto; padding: 36px 20px 100px; }
+    .page-header { text-align: center; margin-bottom: 32px; animation: fu .5s ease both; }
+    .page-header h1 {
+      font-size: 36px; font-weight: 700;
+      background: linear-gradient(90deg, #fff 0%, var(--warn) 55%, #ff7043 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+    .page-header p { color: var(--muted); font-size: 15px; }
+    .stall-tabs {
+      display: flex; gap: 10px; margin-bottom: 28px;
+      overflow-x: auto; padding-bottom: 4px;
+      animation: fu .5s .05s ease both; scrollbar-width: none;
+    }
+    .stall-tabs::-webkit-scrollbar { display: none; }
+    .stall-tab {
+      flex-shrink: 0; display: flex; align-items: center; gap: 10px;
+      padding: 12px 20px; border-radius: 14px; cursor: pointer;
+      border: 1px solid var(--gb); background: var(--glass);
+      backdrop-filter: blur(10px); transition: .25s;
+    }
+    .stall-tab:hover { border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.12); }
+    .stall-tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-color: transparent;
+      box-shadow: 0 4px 20px rgba(0,71,171,.4);
+    }
+    .tab-emoji { font-size: 22px; }
+    .tab-name { font-size: 14px; font-weight: 600; }
+    .tab-sub { font-size: 11px; color: rgba(255,255,255,.6); }
+    .stall-tab.active .tab-sub { color: rgba(255,255,255,.8); }
+    .stall-panel { display: none; animation: fu .4s ease both; }
+    .stall-panel.active { display: block; }
+    .stall-hero { border-radius: 18px; overflow: hidden; margin-bottom: 24px; position: relative; height: 200px; }
+    .stall-hero img { width: 100%; height: 100%; object-fit: cover; filter: brightness(.65); }
+    .stall-hero-info {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 20px 24px;
+      background: linear-gradient(to top, rgba(0,0,0,.85) 0%, transparent 100%);
+    }
+    .stall-hero-info h2 { font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+    .stall-hero-info p { font-size: 13px; color: rgba(255,255,255,.75); }
+    .stall-status {
+      position: absolute; top: 16px; right: 16px;
+      font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 20px;
+      text-transform: uppercase; letter-spacing: .05em;
+    }
+    .s-open { background: rgba(0,230,118,.2); color: var(--success); border: 1px solid rgba(0,230,118,.4); }
+    .s-busy { background: rgba(255,171,64,.18); color: var(--warn); border: 1px solid rgba(255,171,64,.35); }
+    .sec-title {
+      font-size: 16px; font-weight: 600; color: var(--secondary);
+      margin: 24px 0 14px; display: flex; align-items: center; gap: 8px;
+    }
+    .sec-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,.1); margin-left: 8px; }
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(230px,1fr)); gap: 14px; }
+    .menu-item {
+      background: var(--glass); border: 1px solid var(--gb);
+      border-radius: 14px; overflow: hidden; transition: .25s; cursor: pointer;
+    }
+    .menu-item:hover { transform: translateY(-3px); border-color: rgba(0,191,255,.35); }
+    .menu-item img { width: 100%; height: 130px; object-fit: cover; display: block; }
+    .item-body { padding: 12px 14px; }
+    .item-name { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+    .item-desc { font-size: 12px; color: var(--muted); margin-bottom: 10px; line-height: 1.5; }
+    .item-footer { display: flex; align-items: center; justify-content: space-between; }
+    .item-price { font-size: 15px; font-weight: 700; color: var(--success); }
+    .vd { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid; flex-shrink: 0; }
+    .vd.veg { background: #00c853; border-color: #00c853; }
+    .vd.nonveg { background: #d32f2f; border-color: #d32f2f; }
+    .add-btn {
+      display: flex; align-items: center; gap: 2px;
+      padding: 5px 12px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff; border: none; font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: 'Outfit', sans-serif; transition: .2s;
+    }
+    .add-btn:hover { filter: brightness(1.12); transform: scale(1.04); }
+    .item-qty { display: flex; align-items: center; gap: 8px; }
+    .qbtn {
+      width: 28px; height: 28px; border-radius: 7px;
+      border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.08);
+      color: #fff; font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: .15s; font-family: 'Outfit', sans-serif;
+    }
+    .qbtn:hover { background: rgba(255,255,255,.18); }
+    .qnum { font-size: 14px; font-weight: 600; min-width: 18px; text-align: center; }
+    .cart-fab {
+      position: fixed; bottom: 28px; right: 28px; z-index: 300;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff; border: none; border-radius: 18px; padding: 14px 22px;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+      box-shadow: 0 6px 28px rgba(0,71,171,.55);
+      display: flex; align-items: center; gap: 10px; transition: .25s;
+    }
+    .cart-fab:hover { transform: scale(1.05); }
+    .cart-fab.hidden { display: none; }
+    .cbadge { background: #fff; color: var(--primary); border-radius: 20px; font-size: 12px; font-weight: 700; padding: 2px 8px; }
+    .c-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 400; display: none; }
+    .c-overlay.open { display: block; }
+    .c-drawer {
+      position: fixed; bottom: 0; right: 0; top: 0;
+      width: min(420px,100vw); background: #0d1b2e;
+      border-left: 1px solid var(--gb); z-index: 500;
+      display: flex; flex-direction: column;
+      transform: translateX(100%); transition: .3s cubic-bezier(.4,0,.2,1);
+    }
+    .c-drawer.open { transform: translateX(0); }
+    .c-head {
+      padding: 20px 24px; border-bottom: 1px solid rgba(255,255,255,.1);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .c-head h3 { font-size: 18px; font-weight: 600; }
+    .c-close { background: none; border: none; color: var(--muted); font-size: 22px; cursor: pointer; }
+    .c-stall { font-size: 12px; color: var(--secondary); margin-top: 2px; }
+    .c-items { flex: 1; overflow-y: auto; padding: 16px 24px; }
+    .c-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.07); }
+    .c-row img { width: 52px; height: 52px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+    .c-rinfo { flex: 1; }
+    .c-rname { font-size: 14px; font-weight: 500; }
+    .c-rprice { font-size: 13px; color: var(--success); margin-top: 2px; }
+    .c-rqty { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+    .cqb {
+      width: 26px; height: 26px; border-radius: 6px;
+      border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.07);
+      color: #fff; font-size: 15px; cursor: pointer; font-family: 'Outfit', sans-serif;
+    }
+    .c-foot { padding: 20px 24px; border-top: 1px solid rgba(255,255,255,.1); }
+    .c-tot { display: flex; justify-content: space-between; font-size: 17px; font-weight: 600; margin-bottom: 16px; }
+    .place-btn {
+      width: 100%; padding: 15px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff; border: none; border-radius: 13px;
+      font-size: 16px; font-weight: 600; cursor: pointer;
+      font-family: 'Outfit', sans-serif; transition: .25s;
+    }
+    .place-btn:hover { filter: brightness(1.1); }
+    .ec { text-align: center; padding: 48px 20px; color: var(--muted); }
+    .ec-icon { font-size: 48px; margin-bottom: 12px; }
+    .o-success {
+      display: none; position: fixed; inset: 0; z-index: 600;
+      background: rgba(0,0,0,.75);
+      align-items: center; justify-content: center;
+    }
+    .o-success.show { display: flex; }
+    .sbox {
+      background: #0d1b2e; border: 1px solid rgba(0,230,118,.3);
+      border-radius: 20px; padding: 40px 36px; text-align: center;
+      max-width: 360px; animation: popIn .4s ease both;
+    }
+    .sbox .bi { font-size: 64px; margin-bottom: 12px; }
+    .sbox h3 { font-size: 22px; font-weight: 700; color: var(--success); margin-bottom: 8px; }
+    .sbox p { color: var(--muted); font-size: 14px; line-height: 1.7; }
+    .ok-btn {
+      margin-top: 24px; padding: 12px 36px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff; border: none; border-radius: 12px;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      font-family: 'Outfit', sans-serif;
+    }
+    @keyframes fu { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes popIn { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: scale(1); } }
 
+    /* ─── ACCOUNT PAGE ─── */
+    #accountPage {
+      display: none; position: fixed; inset: 0; z-index: 700;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(10px);
+      align-items: flex-start; justify-content: center;
+      overflow-y: auto; padding: 40px 20px;
+    }
+    #accountPage.show { display: flex; }
+    .acc-modal {
+      width: 100%; max-width: 680px;
+      background: linear-gradient(160deg, #0a1628 0%, #0d1f3c 100%);
+      border: 1px solid var(--gb); border-radius: 24px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04) inset;
+      animation: popIn 0.35s ease both;
+      overflow: hidden; margin: auto;
+    }
+    .acc-header {
+      padding: 28px 32px 20px;
+      border-bottom: 1px solid var(--gb);
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(0,71,171,0.12);
+    }
+    .acc-header-left { display: flex; align-items: center; gap: 16px; }
+    .acc-avatar-lg {
+      width: 60px; height: 60px; border-radius: 18px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; font-weight: 800;
+      box-shadow: 0 6px 24px rgba(0,71,171,0.45);
+    }
+    .acc-userinfo h2 { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+    .acc-userinfo p { font-size: 12px; color: var(--muted); }
+    .acc-close {
+      background: rgba(255,255,255,0.07); border: 1px solid var(--gb);
+      border-radius: 10px; color: var(--muted); font-size: 20px;
+      cursor: pointer; width: 38px; height: 38px;
+      display: flex; align-items: center; justify-content: center;
+      transition: .2s;
+    }
+    .acc-close:hover { color: #fff; background: rgba(255,82,82,0.15); border-color: rgba(255,82,82,0.3); }
+    .acc-body { padding: 28px 32px; }
+    .acc-section-title {
+      font-size: 14px; font-weight: 700; color: var(--secondary);
+      letter-spacing: 0.06em; text-transform: uppercase;
+      margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+    }
+    .acc-section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,.08); margin-left: 4px; }
+    .order-history-empty {
+      text-align: center; padding: 48px 20px; color: var(--muted);
+    }
+    .order-history-empty .ohe-icon { font-size: 48px; margin-bottom: 12px; }
+    .order-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px; margin-bottom: 16px; overflow: hidden;
+    }
+    .order-card-head {
+      padding: 14px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(0,71,171,0.12);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .order-card-id { font-size: 14px; font-weight: 800; color: #fff; letter-spacing: 0.03em; }
+    .order-card-meta { font-size: 11px; color: var(--muted); margin-top: 3px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .order-status-badge {
+      font-size: 10px; font-weight: 700; padding: 4px 11px; border-radius: 20px;
+      text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;
+    }
+    .status-delivered { background: rgba(0,230,118,.15); color: var(--success); border: 1px solid rgba(0,230,118,.3); }
+
+    .receipt-table { width: 100%; padding: 0 18px; }
+    .receipt-header-row {
+      display: grid; grid-template-columns: 1fr 60px 50px 72px;
+      padding: 10px 0 6px;
+      border-bottom: 1px dashed rgba(255,255,255,0.12);
+      font-size: 10px; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.07em;
+    }
+    .receipt-header-row span:not(:first-child) { text-align: right; }
+    .receipt-item-row {
+      display: grid; grid-template-columns: 1fr 60px 50px 72px;
+      padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 13px; align-items: center;
+    }
+    .receipt-item-row:last-child { border-bottom: none; }
+    .ri-name { color: #ddeeff; font-weight: 500; }
+    .ri-unit { text-align: right; color: var(--muted); font-size: 12px; }
+    .ri-qty  { text-align: right; color: #cce0ff; font-weight: 600; }
+    .ri-sub  { text-align: right; color: var(--success); font-weight: 700; font-size: 14px; }
+
+    .receipt-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 18px;
+      border-top: 2px solid rgba(0,191,255,0.2);
+      background: rgba(0,191,255,0.04);
+    }
+    .receipt-footer-label { font-size: 13px; font-weight: 700; color: #cce0ff; }
+    .receipt-footer-total { font-size: 20px; font-weight: 900; color: var(--success); }
+
+    .receipt-time-row {
+      display: flex; justify-content: space-between;
+      padding: 9px 18px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      font-size: 11px; color: var(--muted);
+      background: rgba(0,0,0,0.15);
+    }
+
+    @media (max-width: 640px) {
+      .acc-stats { grid-template-columns: repeat(3,1fr); }
+      .acc-modal { border-radius: 18px; }
+      .acc-body { padding: 20px; }
+      .acc-header { padding: 20px; }
+    }
+    @media (max-width: 640px) {
+      .hamburger { display: block; }
+      .desktop-only { display: none; }
+      .menu-grid { grid-template-columns: 1fr 1fr; }
+      .stall-hero { height: 160px; }
+      .auth-card { padding: 30px 24px; }
+    }
+  </style>
 </head>
-
 <body>
+<canvas id="bg" width="1272" height="588"></canvas>
 
-<header>
+<!-- ─── AUTH PAGE ─── -->
+<div id="authPage">
+  <nav class="navbar">
+    <div class="branding">
+      <div class="logo-circle">🍽️</div>
+      <div class="brand-text">
+        <div class="brand-name">CampusBite-BU</div>
+        <div class="brand-sub">The Times of India Group</div>
+      </div>
+    </div>
+    <div class="nav-badge">Student Portal</div>
+  </nav>
 
-<div class="logo">CampusBite</div>
+  <main class="auth-main">
+    <div class="auth-card">
+      <div class="card-header">
+        <div class="card-icon">🍽️</div>
+        <div class="card-title">CampusBite-BU</div>
+        <div class="card-sub">Your campus food companion</div>
+      </div>
 
-<nav>
-<a href="#">Home</a>
-<a href="#">Outlets</a>
-<a href="#">Features</a>
-<a href="#">Contact</a>
-</nav>
+      <div class="auth-tabs">
+        <div class="auth-tab active" onclick="switchTab(&#39;login&#39;)">Sign In</div>
+        <div class="auth-tab" onclick="switchTab(&#39;register&#39;)">Register</div>
+      </div>
 
-</header>
+      <!-- LOGIN FORM -->
+      <form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)">
+        <div class="field">
+          <label>University Email</label>
+          <div class="input-wrap">
+            <span class="input-icon">✉️</span>
+            <input type="email" id="l-email" placeholder="student@bu.edu.in" autocomplete="email">
+          </div>
+          <span class="err-msg" id="l-email-err">Please enter a valid university email.</span>
+        </div>
 
+        <div class="field">
+          <label>Password</label>
+          <div class="input-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="l-pass" placeholder="Enter your password" autocomplete="current-password">
+            <span class="toggle-pw" onclick="togglePw(&#39;l-pass&#39;,this)">👁️</span>
+          </div>
+          <span class="err-msg" id="l-pass-err">Password cannot be empty.</span>
+        </div>
 
-<section class="hero">
+        <div class="hint-row">
+          <label><input type="checkbox"> Remember me</label>
+          <span class="forgot">Forgot password?</span>
+        </div>
 
-<div>
+        <button type="submit" class="submit-btn">Sign In to Campus</button>
 
-<h1>Campus Food. Simplified.</h1>
+        <div class="divider">or continue with</div>
+        <div class="sso-row">
+          <button type="button" class="sso-btn" onclick="ssoLogin(&#39;BU SSO&#39;)">🏛️ BU SSO</button>
+          <button type="button" class="sso-btn" onclick="ssoLogin(&#39;Google&#39;)">📧 Google</button>
+        </div>
 
-<button>Explore Outlets</button>
+        <div class="switch-txt">
+          New student? <a onclick="switchTab(&#39;register&#39;)">Create account →</a>
+        </div>
+      </form>
 
+      <!-- REGISTER FORM -->
+      <form class="auth-form" id="registerForm" onsubmit="handleRegister(event)">
+        <div class="field">
+          <label>Full Name</label>
+          <div class="input-wrap">
+            <span class="input-icon">👤</span>
+            <input type="text" id="r-name" placeholder="Your full name" autocomplete="name">
+          </div>
+          <span class="err-msg" id="r-name-err">Please enter your full name.</span>
+        </div>
+
+        <div class="field">
+          <label>Enrollment Number</label>
+          <div class="input-wrap">
+            <span class="input-icon">🎫</span>
+            <input type="text" id="r-enroll" placeholder="e.g. BU2024CS001" autocomplete="off">
+          </div>
+          <span class="err-msg" id="r-enroll-err">Please enter a valid enrollment number.</span>
+        </div>
+
+        <div class="field">
+          <label>University Email</label>
+          <div class="input-wrap">
+            <span class="input-icon">✉️</span>
+            <input type="email" id="r-email" placeholder="student@bu.edu.in" autocomplete="email">
+          </div>
+          <span class="err-msg" id="r-email-err">Please enter a valid university email.</span>
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <div class="input-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="r-pass" placeholder="Create a strong password" autocomplete="new-password">
+            <span class="toggle-pw" onclick="togglePw(&#39;r-pass&#39;,this)">👁️</span>
+          </div>
+          <span class="err-msg" id="r-pass-err">Password must be at least 8 characters.</span>
+          <div id="pw-strength" style="display:none;margin-top:8px;"></div>
+        </div>
+
+        <button type="submit" class="submit-btn">Create Account</button>
+
+        <div class="switch-txt">
+          Already registered? <a onclick="switchTab(&#39;login&#39;)">Sign in →</a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <footer>
+    © 2024 CampusBite-BU · The Times of India Group · <em>Let India Move With the Times</em>
+  </footer>
 </div>
 
-</section>
+<!-- ─── FOOD APP PAGE ─── -->
+<div id="appPage">
+  <header class="app-navbar">
+    <div class="app-branding">
+      <div class="app-logo">🍽️</div>
+      <div class="app-tagline">
+        <p>CampusBite-BU</p>
+        <p><em>Let India Move With the Times</em></p>
+      </div>
+    </div>
+    <div class="hamburger" onclick="toggleSidebar()">☰</div>
+    <ul class="nav-links desktop-only">
+      <li><a href="file:///C:/Users/hp/Downloads/CampusBite-BU_final_%20(5).html#" class="active">🍽️ Food Stalls</a></li>
+    </ul>
+    <div class="nav-user desktop-only">
+      <div class="user-chip" onclick="openAccount()" style="cursor:pointer;" title="My Account">
+        <div class="user-avatar" id="userAvatar">?</div>
+        <span id="userLabel">Student</span>
+      </div>
+      <button class="logout-btn" style="background:rgba(0,191,255,0.08);border-color:rgba(0,191,255,0.25);color:var(--secondary);" onclick="openAccount()">📋 Orders</button>
+      <button class="logout-btn" onclick="doLogout()">Logout</button>
+    </div>
+  </header>
 
+  <div id="mobileSidebar" class="sidebar">
+    <a href="javascript:void(0)" class="closebtn" onclick="toggleSidebar()">×</a>
+    <a href="file:///C:/Users/hp/Downloads/CampusBite-BU_final_%20(5).html#" style="color:var(--secondary)">🍽️ Food Stalls</a>
+    <a href="javascript:void(0)" onclick="openAccount();toggleSidebar()">📋 Orders</a>
+    <a href="javascript:void(0)" onclick="doLogout();toggleSidebar()">Logout</a>
+  </div>
 
-<section class="section">
+  <main class="app-main">
+    <div class="page-header">
+      <h1>🍽️ BU Food Stalls</h1>
+      <p>Tap a stall · Browse the menu · Place your order</p>
+    </div>
 
-<h2>Campus Food Outlets</h2>
+    <div class="stall-tabs">
+      <div class="stall-tab active" onclick="showStall(&#39;hotspot&#39;,this)">
+        <span class="tab-emoji">🍜</span>
+        <div><div class="tab-name">Hotspot</div><div class="tab-sub">Maggi &amp; Sandwiches</div></div>
+      </div>
+      <div class="stall-tab" onclick="showStall(&#39;southern&#39;,this)">
+        <span class="tab-emoji">🥘</span>
+        <div><div class="tab-name">Southern</div><div class="tab-sub">South Indian Flavours</div></div>
+      </div>
+      <div class="stall-tab" onclick="showStall(&#39;snapeats&#39;,this)">
+        <span class="tab-emoji">🌯</span>
+        <div><div class="tab-name">SnapEats</div><div class="tab-sub">Rolls, Burgers &amp; More</div></div>
+      </div>
+      <div class="stall-tab" onclick="showStall(&#39;kathi&#39;,this)">
+        <span class="tab-emoji">🎂</span>
+        <div><div class="tab-name">Kathi</div><div class="tab-sub">Cakes, Chinese &amp; Rolls</div></div>
+      </div>
+    </div>
 
-<div class="grid">
+    <!-- HOTSPOT -->
+    <div class="stall-panel active" id="panel-hotspot">
+      <div class="stall-hero">
+        <img src="file:///C:/Users/hp/Downloads/CampusBite-BU(final)_files/photo-1612929633738-8fe44f7ec841" alt="Hotspot">
+        <div class="stall-hero-info"><h2>🍜 Hotspot</h2><p>📍 Block A, Ground Floor &nbsp;·&nbsp; ⏱ 9 AM – 9 PM &nbsp;·&nbsp; ⭐ 4.4 &nbsp;·&nbsp; ₹30–₹90</p></div>
+        <div class="stall-status s-open">● Open</div>
+      </div>
+      <div class="sec-title">🍜 Maggi Varieties</div>
+      <div class="menu-grid" id="g-hotspot-1"></div>
+      <div class="sec-title">🥪 Sandwiches</div>
+      <div class="menu-grid" id="g-hotspot-2"></div>
+    </div>
 
-<div class="card">
-<img src="https://images.unsplash.com/photo-1550547660-d9450f859349">
-<h3>Campus Cafe</h3>
-<p>Burgers • Coffee</p>
+    <!-- SOUTHERN -->
+    <div class="stall-panel" id="panel-southern">
+      <div class="stall-hero">
+        <img src="file:///C:/Users/hp/Downloads/CampusBite-BU(final)_files/photo-1630383249896-424e482df921" alt="Southern">
+        <div class="stall-hero-info"><h2>🥘 Southern</h2><p>📍 Block B, Food Court &nbsp;·&nbsp; ⏱ 7:30 AM – 9 PM &nbsp;·&nbsp; ⭐ 4.5 &nbsp;·&nbsp; ₹30–₹140</p></div>
+        <div class="stall-status s-busy">● Busy</div>
+      </div>
+      <div class="sec-title">🥞 Dosas &amp; Breakfast</div>
+      <div class="menu-grid" id="g-southern-1"></div>
+      <div class="sec-title">🍗 Rice &amp; Biryani</div>
+      <div class="menu-grid" id="g-southern-2"></div>
+      <div class="sec-title">🥤 Soft Drinks</div>
+      <div class="menu-grid" id="g-southern-3"></div>
+    </div>
+
+    <!-- SNAPEATS -->
+    <div class="stall-panel" id="panel-snapeats">
+      <div class="stall-hero">
+        <img src="file:///C:/Users/hp/Downloads/CampusBite-BU(final)_files/photo-1626700051175-6818013e1d4f" alt="SnapEats">
+        <div class="stall-hero-info"><h2>🌯 SnapEats</h2><p>📍 Gate 2, Open Court &nbsp;·&nbsp; ⏱ 10 AM – 10 PM &nbsp;·&nbsp; ⭐ 4.6 &nbsp;·&nbsp; ₹15–₹150</p></div>
+        <div class="stall-status s-open">● Open</div>
+      </div>
+      <div class="sec-title">🌯 Rolls</div>
+      <div class="menu-grid" id="g-snapeats-1"></div>
+      <div class="sec-title">🍔 Burgers</div>
+      <div class="menu-grid" id="g-snapeats-2"></div>
+      <div class="sec-title">🍱 Meals</div>
+      <div class="menu-grid" id="g-snapeats-3"></div>
+      <div class="sec-title">☕ Tea, Coffee &amp; Shakes</div>
+      <div class="menu-grid" id="g-snapeats-4"></div>
+    </div>
+
+    <!-- KATHI -->
+    <div class="stall-panel" id="panel-kathi">
+      <div class="stall-hero">
+        <img src="file:///C:/Users/hp/Downloads/CampusBite-BU(final)_files/photo-1578985545062-69928b1d9587" alt="Kathi">
+        <div class="stall-hero-info"><h2>🎂 Kathi</h2><p>📍 Block C, Main Entrance &nbsp;·&nbsp; ⏱ 8 AM – 10 PM &nbsp;·&nbsp; ⭐ 4.3 &nbsp;·&nbsp; ₹30–₹130</p></div>
+        <div class="stall-status s-open">● Open</div>
+      </div>
+      <div class="sec-title">🎂 Cakes &amp; Pastries</div>
+      <div class="menu-grid" id="g-kathi-1"></div>
+      <div class="sec-title">🥗 Chole Bhature &amp; Rolls</div>
+      <div class="menu-grid" id="g-kathi-2"></div>
+      <div class="sec-title">🍜 Chinese Corner</div>
+      <div class="menu-grid" id="g-kathi-3"></div>
+      <div class="sec-title">🥤 Cold Drinks</div>
+      <div class="menu-grid" id="g-kathi-4"></div>
+    </div>
+  </main>
+
+  <button class="cart-fab hidden" id="cartFab" onclick="openCart()">🛒 View Order <span class="cbadge" id="cartCount">0</span></button>
+  <div class="c-overlay" id="co" onclick="closeCart()"></div>
+  <div class="c-drawer" id="cd">
+    <div class="c-head">
+      <div><h3>Your Order</h3><div class="c-stall" id="csl"></div></div>
+      <button class="c-close" onclick="closeCart()">×</button>
+    </div>
+    <div class="c-items" id="citems"></div>
+    <div class="c-foot">
+      <div class="c-tot"><span>Total</span><span id="ctot">₹0</span></div>
+      <button class="place-btn" onclick="placeOrder()">Place Order →</button>
+    </div>
+  </div>
+  <div class="o-success" id="os">
+    <div class="sbox">
+      <div class="bi">🎉</div>
+      <h3>Order Placed!</h3>
+      <p id="smsg"></p>
+      <button class="ok-btn" onclick="document.getElementById(&#39;os&#39;).classList.remove(&#39;show&#39;)">Great!</button>
+    </div>
+  </div>
+
+  <!-- ─── ORDERS PAGE ─── -->
+  <div id="accountPage">
+    <div class="acc-modal">
+      <div class="acc-header">
+        <div class="acc-header-left">
+          <div class="acc-avatar-lg">📋</div>
+          <div class="acc-userinfo">
+            <h2>My Orders</h2>
+            <p id="accEmail">Your order history</p>
+          </div>
+        </div>
+        <button class="acc-close" onclick="closeAccount()">×</button>
+      </div>
+      <div class="acc-body">
+        <div id="orderHistoryList">
+          <div class="order-history-empty">
+            <div class="ohe-icon">🛒</div>
+            <p>No orders yet. Go grab some food!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="card">
-<img src="https://images.unsplash.com/photo-1617093727343-374698b1b08d?auto=format&fit=crop&w=800&q=80">
-<h3>Maggi Point</h3>
-<p>Maggi • Pasta</p>
-</div>
+<script>
+/* ── Particle Background ── */
+const cv = document.getElementById('bg'), cx = cv.getContext('2d');
+function resize() { cv.width = window.innerWidth; cv.height = window.innerHeight; }
+resize(); window.addEventListener('resize', resize);
+const pts = Array.from({length: 110}, () => ({
+  x: Math.random() * cv.width, y: Math.random() * cv.height,
+  r: Math.random() * 1.3 + 0.4,
+  dx: (Math.random() - 0.5) * 0.35, dy: (Math.random() - 0.5) * 0.35
+}));
+(function loop() {
+  cx.clearRect(0, 0, cv.width, cv.height);
+  for (const p of pts) {
+    cx.beginPath(); cx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    cx.fillStyle = 'rgba(180,220,255,0.4)'; cx.fill();
+    p.x += p.dx; p.y += p.dy;
+    if (p.x < 0 || p.x > cv.width) p.dx *= -1;
+    if (p.y < 0 || p.y > cv.height) p.dy *= -1;
+  }
+  requestAnimationFrame(loop);
+})();
+
+/* ── Session ── */
+let currentUser = null;
+
+function goToApp(name, email) {
+  currentUser = { name, email };
+  document.getElementById('authPage').style.display = 'none';
+  document.getElementById('appPage').style.display = 'block';
+  const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('userAvatar').textContent = initials;
+  document.getElementById('userLabel').textContent = name.split(' ')[0];
+  buildMenus();
+}
+
+function doLogout() {
+  currentUser = null;
+  cart = {}; cartStall = null;
+  document.getElementById('appPage').style.display = 'none';
+  document.getElementById('authPage').style.display = 'flex';
+  // reset forms
+  document.getElementById('loginForm').reset();
+  document.getElementById('registerForm').reset();
+  switchTab('login');
+}
+
+/* ── Tab Switch ── */
+function switchTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t, i) =>
+    t.classList.toggle('active', (tab === 'login' ? 0 : 1) === i));
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+  document.getElementById(tab === 'login' ? 'loginForm' : 'registerForm').classList.add('active');
+}
+
+/* ── Toggle Password ── */
+function togglePw(id, el) {
+  const inp = document.getElementById(id);
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  el.textContent = show ? '🙈' : '👁️';
+}
+
+/* ── Validate ── */
+function setErr(id, show) {
+  const inp = document.getElementById(id);
+  const err = document.getElementById(id + '-err');
+  inp.classList.toggle('error', show);
+  if (err) err.classList.toggle('show', show);
+  return show;
+}
+
+/* ── Password Strength ── */
+document.getElementById('r-pass').addEventListener('input', function() {
+  const val = this.value;
+  const el = document.getElementById('pw-strength');
+  if (!val) { el.style.display = 'none'; return; }
+  el.style.display = 'block';
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const labels = ['Weak', 'Fair', 'Good', 'Strong'];
+  const colors = ['#ff5252', '#ffab40', '#00bfff', '#00e676'];
+  const c = colors[score - 1] || '#ff5252';
+  el.innerHTML = `
+    <div style="display:flex;gap:4px;margin-bottom:4px;">
+      ${[0,1,2,3].map(i => `<div style="flex:1;height:3px;border-radius:4px;background:${i < score ? c : 'rgba(255,255,255,0.12)'}"></div>`).join('')}
+    </div>
+    <span style="font-size:11px;color:${c};">${labels[score-1] || 'Too short'}</span>`;
+});
+
+/* ── Login Handler ── */
+function handleLogin(e) {
+  e.preventDefault();
+  let ok = true;
+  const email = document.getElementById('l-email').value.trim();
+  const pass = document.getElementById('l-pass').value;
+  if (!email || !/\S+@\S+\.\S+/.test(email)) { setErr('l-email', true); ok = false; } else setErr('l-email', false);
+  if (!pass) { setErr('l-pass', true); ok = false; } else setErr('l-pass', false);
+  if (!ok) return;
+  const name = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  goToApp(name, email);
+}
+
+/* ── Register Handler ── */
+function handleRegister(e) {
+  e.preventDefault();
+  let ok = true;
+  const name   = document.getElementById('r-name').value.trim();
+  const enroll = document.getElementById('r-enroll').value.trim();
+  const email  = document.getElementById('r-email').value.trim();
+  const pass   = document.getElementById('r-pass').value;
+  if (!name)   { setErr('r-name', true);   ok = false; } else setErr('r-name', false);
+  if (!enroll) { setErr('r-enroll', true); ok = false; } else setErr('r-enroll', false);
+  if (!email || !/\S+@\S+\.\S+/.test(email)) { setErr('r-email', true); ok = false; } else setErr('r-email', false);
+  if (!pass || pass.length < 8) { setErr('r-pass', true); ok = false; } else setErr('r-pass', false);
+  if (!ok) return;
+  goToApp(name, email);
+}
+
+/* ── SSO Login ── */
+function ssoLogin(provider) {
+  goToApp('BU Student', 'student@bu.edu.in');
+}
+
+/* ── Menu Data ── */
+const MENU = {
+  'hotspot-1': [
+    {name:'Classic Maggi',desc:'Original masala, perfectly cooked',price:40,type:'veg',img:'https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=400&q=70'},
+    {name:'Butter Maggi',desc:'Extra butter & cream, rich and indulgent',price:55,type:'veg',img:'https://images.unsplash.com/photo-1585032226651-759b368d7246?w=400&q=70'},
+    {name:'Cheese Maggi',desc:'Loaded with melted cheese on top',price:65,type:'veg',img:'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=400&q=70'},
+    {name:'Spicy Masala Maggi',desc:'Extra chilli & spices for heat lovers 🌶️',price:55,type:'veg',img:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=70'},
+    {name:'Egg Maggi',desc:'Classic maggi tossed with scrambled egg',price:60,type:'nonveg',img:'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=400&q=70'},
+    {name:'Chicken Maggi',desc:'Tender chicken pieces with spiced noodles',price:75,type:'nonveg',img:'https://images.unsplash.com/photo-1555126634-323283e090fa?w=400&q=70'},
+  ],
+  'hotspot-2': [
+    {name:'Veg Grilled Sandwich',desc:'Tomato, cucumber, cheese, green chutney',price:50,type:'veg',img:'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400&q=70'},
+    {name:'Paneer Tikka Sandwich',desc:'Spiced paneer tikka, onion, capsicum',price:70,type:'veg',img:'https://images.unsplash.com/photo-1539252554453-80ab65ce3586?w=400&q=70'},
+    {name:'Chicken Mayo Sandwich',desc:'Shredded chicken, mayo, lettuce, cheese',price:80,type:'nonveg',img:'https://images.unsplash.com/photo-1550317138-10000687a72b?w=400&q=70'},
+  ],
+  'southern-1': [
+    {name:'Masala Dosa',desc:'Crispy dosa with spiced potato filling & sambar',price:70,type:'veg',img:'https://images.unsplash.com/photo-1630383249896-424e482df921?w=400&q=70'},
+    {name:'Plain Dosa',desc:'Thin crispy rice crepe with coconut chutney',price:50,type:'veg',img:'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=400&q=70'},
+    {name:'Idli Sambar (3 pcs)',desc:'Steamed rice cakes with hot sambar',price:50,type:'veg',img:'https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=400&q=70'},
+    {name:'Aloo Paratha',desc:'Stuffed potato flatbread with curd & pickle',price:60,type:'veg',img:'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&q=70'},
+    {name:'Chilli Fry Idli',desc:'Pan-fried idli with peppers, onion & chilli sauce',price:80,type:'veg',img:'https://images.unsplash.com/photo-1610192244261-3f33de3f55e4?w=400&q=70'},
+  ],
+  'southern-2': [
+    {name:'Veg Biryani 65',desc:'Fragrant basmati rice with spiced veg, raita',price:110,type:'veg',img:'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=400&q=70'},
+    {name:'Chicken Biryani 65',desc:'Dum-cooked chicken biryani, Hyderabadi style',price:140,type:'nonveg',img:'https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=400&q=70'},
+  ],
+  'southern-3': [
+    {name:'Mango Lassi',desc:'Thick chilled mango yoghurt drink',price:50,type:'veg',img:'https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=400&q=70'},
+    {name:'Filter Coffee',desc:'Authentic South Indian decoction coffee',price:30,type:'veg',img:'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&q=70'},
+    {name:'Fresh Lime Soda',desc:'Chilled nimbu soda, sweet or salty',price:35,type:'veg',img:'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400&q=70'},
+  ],
+  'snapeats-1': [
+    {name:'Paneer Roll',desc:'Tandoori paneer, onion, chilli in flaky paratha',price:90,type:'veg',img:'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&q=70'},
+    {name:'Chicken Tikka Roll',desc:'Grilled tikka strips, onion rings, mint chutney',price:110,type:'nonveg',img:'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&q=70'},
+    {name:'Chicken Achari Roll',desc:'Tangy pickle-spiced chicken, crunchy onions',price:115,type:'nonveg',img:'https://images.unsplash.com/photo-1544025162-d76594e8cef1?w=400&q=70'},
+    {name:'Egg Roll',desc:'Fresh omelette wrap with chilli & ketchup',price:80,type:'nonveg',img:'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=400&q=70'},
+  ],
+  'snapeats-2': [
+    {name:'Veg Burger',desc:'Crispy aloo patty, lettuce, tomato, cheese',price:80,type:'veg',img:'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&q=70'},
+    {name:'Chicken Burger',desc:'Juicy grilled chicken, special sauce, coleslaw',price:110,type:'nonveg',img:'https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&q=70'},
+  ],
+  'snapeats-3': [
+    {name:'Veg Meal Box',desc:'Rice + Dal + Sabzi + Salad + Curd',price:120,type:'veg',img:'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=70'},
+    {name:'Non-Veg Meal Box',desc:'Rice + Chicken Curry + Salad + Pickle',price:150,type:'nonveg',img:'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&q=70'},
+  ],
+  'snapeats-4': [
+    {name:'Cutting Chai',desc:'Freshly brewed spiced masala tea',price:15,type:'veg',img:'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&q=70'},
+    {name:'Cold Coffee',desc:'Chilled blended coffee with ice cream',price:60,type:'veg',img:'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&q=70'},
+    {name:'Chocolate Shake',desc:'Thick creamy chocolate milkshake',price:80,type:'veg',img:'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&q=70'},
+    {name:'Strawberry Shake',desc:'Fresh strawberry blended milkshake',price:75,type:'veg',img:'https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=400&q=70'},
+  ],
+  'kathi-1': [
+    {name:'Chocolate Pastry',desc:'Rich layered chocolate cake with ganache',price:60,type:'veg',img:'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=400&q=70'},
+    {name:'Black Forest Pastry',desc:'Cream, cherries, chocolate shavings',price:65,type:'veg',img:'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400&q=70'},
+    {name:'Cake Slice',desc:'Fresh daily — vanilla, butterscotch, red velvet',price:50,type:'veg',img:'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=400&q=70'},
+    {name:'Cupcake',desc:'Soft frosted cupcake, assorted flavours',price:40,type:'veg',img:'https://images.unsplash.com/photo-1587668178277-295251f900ce?w=400&q=70'},
+  ],
+  'kathi-2': [
+    {name:'Chole Bhature',desc:'Spiced chickpea curry with puffy fried bhature',price:90,type:'veg',img:'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=400&q=70'},
+    {name:'Veg Kathi Roll',desc:'Mixed veg, paneer, sauces in a soft roll',price:75,type:'veg',img:'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&q=70'},
+    {name:'Chicken Kathi Roll',desc:'Spiced chicken strips, onion, chilli',price:95,type:'nonveg',img:'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400&q=70'},
+  ],
+  'kathi-3': [
+    {name:'Veg Hakka Noodles',desc:'Wok-tossed noodles with fresh vegetables',price:90,type:'veg',img:'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&q=70'},
+    {name:'Chicken Noodles',desc:'Spicy chicken hakka noodles, Indo-Chinese style',price:110,type:'nonveg',img:'https://images.unsplash.com/photo-1555126634-323283e090fa?w=400&q=70'},
+    {name:'Veg Fried Rice',desc:'Wok-fried rice with veggies & soy sauce',price:90,type:'veg',img:'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=400&q=70'},
+    {name:'Egg Fried Rice',desc:'Fried rice tossed with egg & vegetables',price:100,type:'nonveg',img:'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=400&q=70'},
+    {name:'Veg Manchurian',desc:'Crispy veg balls in dark soy-garlic sauce',price:100,type:'veg',img:'https://images.unsplash.com/photo-1585237017125-4a9a5e6a8b0b?w=400&q=70'},
+    {name:'Chicken Manchurian',desc:'Boneless chicken in spicy manchurian gravy',price:120,type:'nonveg',img:'https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=400&q=70'},
+  ],
+  'kathi-4': [
+    {name:'Pepsi / Coke (can)',desc:'Chilled can straight from the fridge',price:30,type:'veg',img:'https://images.unsplash.com/photo-1581098365948-6a5a912a7a49?w=400&q=70'},
+    {name:'Fresh Lemonade',desc:'Nimbu paani — sweet, salty or spicy',price:35,type:'veg',img:'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400&q=70'},
+    {name:'Fruit Punch',desc:'Chilled mixed fruit cooler, refreshing',price:45,type:'veg',img:'https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=400&q=70'},
+  ],
+};
+
+let menusBuilt = false;
+function buildMenus() {
+  if (menusBuilt) return;
+  menusBuilt = true;
+  Object.keys(MENU).forEach(gid => {
+    const grid = document.getElementById('g-' + gid);
+    if (!grid) return;
+    const [stall] = gid.split('-');
+    MENU[gid].forEach(item => {
+      const key = stall + '||' + item.name;
+      const div = document.createElement('div');
+      div.className = 'menu-item';
+      div.dataset.stall = stall; div.dataset.name = item.name;
+      div.innerHTML = `<img src="${item.img}" alt="${item.name}" loading="lazy"/>
+        <div class="item-body">
+          <div class="item-name">${item.name}</div>
+          <div class="item-desc">${item.desc}</div>
+          <div class="item-footer">
+            <span class="item-price">₹${item.price}</span>
+            <div style="display:flex;gap:6px;align-items:center">
+              <span class="vd ${item.type}"></span>
+              <button class="add-btn" onclick="event.stopPropagation();addItem('${key}')">+ Add</button>
+              <div class="item-qty" id="iq-${CSS.escape(key)}" style="display:none">
+                <button class="qbtn" onclick="event.stopPropagation();changeItem('${key}',-1)">−</button>
+                <span class="qnum" id="qn-${CSS.escape(key)}">0</span>
+                <button class="qbtn" onclick="event.stopPropagation();changeItem('${key}',1)">＋</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      grid.appendChild(div);
+    });
+  });
+}
+
+/* ── Cart ── */
+let cart = {}, cartStall = null;
+const STALL_NAMES = { hotspot:'Hotspot', southern:'Southern', snapeats:'SnapEats', kathi:'Kathi' };
+
+function getItem(key) {
+  const [stall, name] = key.split('||');
+  for (const gid of Object.keys(MENU)) {
+    if (gid.startsWith(stall)) {
+      const it = MENU[gid].find(i => i.name === name);
+      if (it) return { ...it, stall };
+    }
+  }
+  return null;
+}
+
+function addItem(key) {
+  const stall = key.split('||')[0];
+  if (cartStall && cartStall !== stall) {
+    if (!confirm(`Your cart has items from ${STALL_NAMES[cartStall]}. Clear and start fresh from ${STALL_NAMES[stall]}?`)) return;
+    Object.keys(cart).forEach(k => { updateCardUI(k, 0); });
+    cart = {}; cartStall = null;
+  }
+  cartStall = stall;
+  if (!cart[key]) cart[key] = 0;
+  cart[key]++;
+  updateCardUI(key, cart[key]);
+  refreshCart();
+}
+
+function changeItem(key, d) {
+  if (!cart[key]) return;
+  cart[key] += d;
+  if (cart[key] <= 0) { delete cart[key]; if (!Object.keys(cart).length) cartStall = null; updateCardUI(key, 0); }
+  else updateCardUI(key, cart[key]);
+  refreshCart();
+}
+
+function updateCardUI(key, qty) {
+  const stall = key.split('||')[0];
+  document.querySelectorAll(`.menu-item[data-stall="${stall}"]`).forEach(el => {
+    if (el.dataset.name === key.split('||')[1]) {
+      const ab = el.querySelector('.add-btn');
+      const iqEl = el.querySelector('.item-qty');
+      const qnEl = el.querySelector('.qnum');
+      if (qty > 0) { if (ab) ab.style.display = 'none'; if (iqEl) iqEl.style.display = 'flex'; if (qnEl) qnEl.textContent = qty; }
+      else { if (ab) ab.style.display = ''; if (iqEl) iqEl.style.display = 'none'; }
+    }
+  });
+}
+
+function refreshCart() {
+  const keys = Object.keys(cart);
+  const total = keys.reduce((s, k) => s + getItem(k).price * cart[k], 0);
+  const count = keys.reduce((s, k) => s + cart[k], 0);
+  document.getElementById('cartCount').textContent = count;
+  document.getElementById('cartFab').classList.toggle('hidden', count === 0);
+  document.getElementById('csl').textContent = cartStall ? STALL_NAMES[cartStall] : '';
+  const el = document.getElementById('citems');
+  if (!keys.length) {
+    el.innerHTML = '<div class="ec"><div class="ec-icon">🛒</div><p>Your cart is empty</p></div>';
+    document.getElementById('ctot').textContent = '₹0'; return;
+  }
+  el.innerHTML = keys.map(k => {
+    const it = getItem(k);
+    return `<div class="c-row"><img src="${it.img}" alt="${it.name}"/><div class="c-rinfo"><div class="c-rname">${it.name}</div><div class="c-rprice">₹${it.price} × ${cart[k]} = ₹${it.price * cart[k]}</div><div class="c-rqty"><button class="cqb" onclick="changeItem('${k}',-1)">−</button><span>${cart[k]}</span><button class="cqb" onclick="changeItem('${k}',1)">+</button></div></div></div>`;
+  }).join('');
+  document.getElementById('ctot').textContent = '₹' + total;
+}
+
+function openCart() { document.getElementById('co').classList.add('open'); document.getElementById('cd').classList.add('open'); }
+function closeCart() { document.getElementById('co').classList.remove('open'); document.getElementById('cd').classList.remove('open'); }
+
+/* ── Order History ── */
+let orderHistory = [];
+
+function placeOrder() {
+  const keys = Object.keys(cart); if (!keys.length) return;
+  const total = keys.reduce((s, k) => s + getItem(k).price * cart[k], 0);
+  const items = keys.map(k => `${getItem(k).name} ×${cart[k]}`).join(', ');
+  const num = 'BU' + Math.floor(1000 + Math.random() * 9000);
+  const now = new Date();
+  const deliveryMins = 10 + Math.floor(Math.random() * 11); // 10–20 min
+  const deliveryTime = new Date(now.getTime() + deliveryMins * 60000);
+
+  // Save to history
+  const orderRecord = {
+    id: num,
+    stall: cartStall,
+    stallName: STALL_NAMES[cartStall],
+    items: keys.map(k => ({ name: getItem(k).name, qty: cart[k], price: getItem(k).price })),
+    total,
+    orderedAt: now,
+    estimatedPickup: deliveryTime,
+    status: 'delivered'
+  };
+  orderHistory.unshift(orderRecord);
+
+  document.getElementById('smsg').innerHTML = `Order <strong>#${num}</strong> from <strong>${STALL_NAMES[cartStall]}</strong> placed!<br><br>${items}<br><br>Total: <strong>₹${total}</strong><br><br>Estimated ready in <strong>${deliveryMins} min</strong> 🍽️`;
+  keys.forEach(k => { updateCardUI(k, 0); });
+  cart = {}; cartStall = null; refreshCart(); closeCart();
+  document.getElementById('os').classList.add('show');
+}
+
+function showStall(id, el) {
+  document.querySelectorAll('.stall-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.stall-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-' + id).classList.add('active');
+}
+
+function toggleSidebar() {
+  const s = document.getElementById('mobileSidebar');
+  s.style.width = s.style.width === '250px' ? '0' : '250px';
+}
+
+/* ── Account Page ── */
+function openAccount() {
+  if (!currentUser) return;
+  renderOrderHistory();
+  document.getElementById('accountPage').classList.add('show');
+}
+
+function closeAccount() {
+  document.getElementById('accountPage').classList.remove('show');
+}
+
+function fmtTime(date) {
+  return date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+}
+function fmtDate(date) {
+  const today = new Date();
+  const isToday = date.toDateString() === today.toDateString();
+  if (isToday) return 'Today';
+  return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+}
+
+function renderOrderHistory() {
+  const el = document.getElementById('orderHistoryList');
+  if (!orderHistory.length) {
+    el.innerHTML = `<div class="order-history-empty"><div class="ohe-icon">🛒</div><p>No orders yet. Go grab some food!</p></div>`;
+    return;
+  }
+  el.innerHTML = orderHistory.map(o => {
+    const rowsHtml = o.items.map(it => `
+      <div class="receipt-item-row">
+        <span class="ri-name">${it.name}</span>
+        <span class="ri-unit">₹${it.price}</span>
+        <span class="ri-qty">×${it.qty}</span>
+        <span class="ri-sub">₹${it.price * it.qty}</span>
+      </div>`).join('');
+
+    return `
+    <div class="order-card">
+      <div class="order-card-head">
+        <div>
+          <div class="order-card-id">#${o.id}</div>
+          <div class="order-card-meta">
+            <span>🏪 ${o.stallName}</span>
+            <span>📅 ${fmtDate(o.orderedAt)}</span>
+            <span>🕐 Ordered ${fmtTime(o.orderedAt)}</span>
+          </div>
+        </div>
+        <span class="order-status-badge status-delivered">✓ Delivered</span>
+      </div>
+
+      <div class="receipt-table">
+        <div class="receipt-header-row">
+          <span>Item</span><span style="text-align:right">Price</span><span style="text-align:right">Qty</span><span style="text-align:right">Subtotal</span>
+        </div>
+        ${rowsHtml}
+      </div>
+
+      <div class="receipt-footer">
+        <span class="receipt-footer-label">💳 Total Paid</span>
+        <span class="receipt-footer-total">₹${o.total}</span>
+      </div>
+      <div class="receipt-time-row">
+        <span>🕐 Ordered: ${fmtTime(o.orderedAt)}</span>
+        <span>🍽️ Ready by: ${fmtTime(o.estimatedPickup)}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Close account page on backdrop click
+document.getElementById('accountPage').addEventListener('click', function(e) {
+  if (e.target === this) closeAccount();
+});
+</script>
 
 
-<div class="card">
-<img src="https://images.unsplash.com/photo-1571091718767-18b5b1457add">
-<h3>Juice Corner</h3>
-<p>Shakes • Smoothies</p>
-</div>
-
-<div class="card">
-<img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe">
-<h3>Snack Bar</h3>
-<p>Fries • Sandwich</p>
-</div>
-
-</div>
-
-</section>
-
-
-<section class="features">
-
-<h2>Why CampusBite</h2>
-
-<div class="feature-grid">
-
-<div class="feature">
-<h3>All Outlets</h3>
-<p>Browse every campus food vendor in one place.</p>
-</div>
-
-<div class="feature">
-<h3>Quick Pickup</h3>
-<p>Order ahead and collect without waiting.</p>
-</div>
-
-<div class="feature">
-<h3>Smart Campus Ordering</h3>
-<p>Built specifically for campus life.</p>
-</div>
-
-</div>
-
-</section>
-
-
-<footer>
-
-<p>© 2026 CampusBite</p>
-
-</footer>
-
-
-<script src="script.js"></script>
-
-</body>
-</html>
+</body></html>
